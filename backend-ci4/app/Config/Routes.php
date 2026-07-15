@@ -6,11 +6,14 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Home::index');
+$routes->get('backend-status', 'Home::backendStatus');
 
 $routes->group('api', ['filter' => 'corsapi'], static function ($routes) {
     $routes->options('(:any)', static function () {
         return service('response')->setStatusCode(204);
     });
+
+    $routes->get('health', 'Api\HealthController::index');
 
     // Courses REST API
     $routes->get('courses', 'Api\CourseController::index');
