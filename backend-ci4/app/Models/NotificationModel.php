@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class EnrollmentModel extends Model
+class NotificationModel extends Model
 {
-    protected $table = 'enrollments';
+    protected $table = 'notifications';
     protected $primaryKey = 'id';
     protected $returnType = 'array';
     protected $useTimestamps = true;
@@ -15,15 +15,16 @@ class EnrollmentModel extends Model
 
     protected $allowedFields = [
         'user_id',
-        'course_id',
-        'status',
-        'enrolled_at',
-        'completed_at',
+        'type',
+        'title',
+        'message',
+        'read_at',
     ];
 
     protected $validationRules = [
         'user_id' => 'required|is_natural_no_zero',
-        'course_id' => 'required|is_natural_no_zero',
-        'status' => 'permit_empty|in_list[active,completed]',
+        'type' => 'required|max_length[64]',
+        'title' => 'required|max_length[160]',
+        'message' => 'required',
     ];
 }

@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class EnrollmentModel extends Model
+class SubscriptionModel extends Model
 {
-    protected $table = 'enrollments';
+    protected $table = 'subscriptions';
     protected $primaryKey = 'id';
     protected $returnType = 'array';
     protected $useTimestamps = true;
@@ -15,15 +15,17 @@ class EnrollmentModel extends Model
 
     protected $allowedFields = [
         'user_id',
-        'course_id',
+        'package_id',
+        'payment_id',
+        'start_date',
+        'end_date',
         'status',
-        'enrolled_at',
-        'completed_at',
     ];
 
     protected $validationRules = [
         'user_id' => 'required|is_natural_no_zero',
-        'course_id' => 'required|is_natural_no_zero',
-        'status' => 'permit_empty|in_list[active,completed]',
+        'package_id' => 'required|is_natural_no_zero',
+        'payment_id' => 'required|is_natural_no_zero',
+        'status' => 'required|in_list[pending,active,expired,rejected]',
     ];
 }

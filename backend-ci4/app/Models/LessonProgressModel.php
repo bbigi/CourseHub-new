@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class EnrollmentModel extends Model
+class LessonProgressModel extends Model
 {
-    protected $table = 'enrollments';
+    protected $table = 'lesson_progress';
     protected $primaryKey = 'id';
     protected $returnType = 'array';
     protected $useTimestamps = true;
@@ -14,16 +14,13 @@ class EnrollmentModel extends Model
     protected $updatedField = 'updated_at';
 
     protected $allowedFields = [
-        'user_id',
-        'course_id',
-        'status',
-        'enrolled_at',
+        'enrollment_id',
+        'lesson_id',
         'completed_at',
     ];
 
     protected $validationRules = [
-        'user_id' => 'required|is_natural_no_zero',
-        'course_id' => 'required|is_natural_no_zero',
-        'status' => 'permit_empty|in_list[active,completed]',
+        'enrollment_id' => 'required|is_natural_no_zero',
+        'lesson_id' => 'required|is_natural_no_zero',
     ];
 }

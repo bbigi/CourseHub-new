@@ -20,4 +20,12 @@ class LessonModel extends Model
         'video_url',
         'order_no',
     ];
+
+    protected $validationRules = [
+        'course_id' => 'required|is_natural_no_zero',
+        'title' => 'required|min_length[3]|max_length[180]',
+        'content' => 'required',
+        'video_url' => 'permit_empty|max_length[255]',
+        'order_no' => 'required|is_natural_no_zero',
+    ];
 }
