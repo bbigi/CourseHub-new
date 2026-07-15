@@ -1,0 +1,837 @@
+/* CourseHub Visual Refresh - Soft, Clean, Professional */
+
+/* ============================================================================
+   CSS VARIABLE OVERRIDES - FORCE NEW COLOR PALETTE
+   ============================================================================ */
+
+/* Override root CSS variables to force new colors globally */
+:root {
+  --background: #F7F5EF !important;
+  --foreground: #1F2A24 !important;
+  --card: #FFFFFF !important;
+  --card-foreground: #1F2A24 !important;
+  --primary: #2F8F5B !important;
+  --primary-foreground: #ffffff !important;
+  --secondary: #F3F0E8 !important;
+  --secondary-foreground: #667268 !important;
+  --muted: #F6F3EC !important;
+  --muted-foreground: #8A948B !important;
+  --accent: #D9A441 !important;
+  --accent-foreground: #1F2A24 !important;
+  --destructive: #D85C57 !important;
+  --sidebar: #FCFBF8 !important;
+  --sidebar-foreground: #1F2A24 !important;
+  --sidebar-primary: #2F8F5B !important;
+  --sidebar-accent: #F6F3EC !important;
+  --border: #DDD6C8 !important;
+}
+
+/* Override any inline styles using old colors */
+*[style*="#FAF8F1"],
+*[style*="#2FA66A"],
+*[style*="#F2B84B"],
+*[style*="#1D2A22"] {
+  /* Let CSS variables take precedence */
+}
+
+/* ============================================================================
+   GLOBAL BACKGROUND - Warm & Clean
+   ============================================================================ */
+
+html, body, #root {
+  background-color: #F7F5EF !important;
+  color: #1F2A24;
+}
+
+/* Page background variations */
+.page-background,
+.dashboard-layout,
+[data-page-background] {
+  background-color: #F3F0E8 !important;
+}
+
+/* ============================================================================
+   SIDEBAR - Light & Clean
+   ============================================================================ */
+
+.sidebar, 
+.sidebar-container,
+nav[class*="sidebar"],
+[data-sidebar] {
+  background-color: #FCFBF8 !important;
+  border-color: #DDD6C8 !important;
+}
+
+/* Sidebar menu items - default state */
+.sidebar-item,
+[data-sidebar-item] {
+  color: #667268;
+  transition: all 0.2s ease;
+}
+
+/* Sidebar menu items - active state (LEMBUT, BUKAN BLOCK TEBAL) */
+.sidebar-item-active,
+.sidebar-item[data-active="true"],
+[data-sidebar-item][data-active="true"] {
+  background: linear-gradient(90deg, rgba(232, 244, 236, 0.6), transparent) !important;
+  border-left: 3px solid #2F8F5B !important;
+  color: #2F8F5B !important;
+}
+
+/* Sidebar logout button - JANGAN HIJAU SOLID */
+.sidebar-logout,
+button[class*="logout"] {
+  background: transparent !important;
+  border: 1px solid #DDD6C8 !important;
+  color: #667268 !important;
+}
+
+.sidebar-logout:hover,
+button[class*="logout"]:hover {
+  background: rgba(216, 92, 87, 0.05) !important;
+  border-color: #D85C57 !important;
+  color: #D85C57 !important;
+}
+
+/* ============================================================================
+   TOPBAR - Clean & Minimal
+   ============================================================================ */
+
+.topbar,
+.navbar-public,
+nav[class*="topbar"] {
+  background-color: #FCFBF8 !important;
+  border-bottom: 1px solid #DDD6C8 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Notification badge */
+.notification-badge,
+[data-notification-badge] {
+  background-color: #2F8F5B !important;
+  color: white !important;
+}
+
+/* ============================================================================
+   CARD STATISTIK - PUTIH BERSIH DENGAN ICON CHIP BERWARNA
+   INI BAGIAN PALING PENTING!
+   ============================================================================ */
+
+/* Base card styling - PUTIH, BUKAN HIJAU SOLID */
+.stats-card,
+.dashboard-card,
+.card,
+.glass-card,
+[data-stats-card],
+[class*="GlassCard"],
+[class*="stats-card"] {
+  background-color: #FFFFFF !important;
+  border: 1px solid #DDD6C8 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.2s ease;
+}
+
+/* Card hover */
+.stats-card:hover,
+.dashboard-card:hover,
+.card:hover {
+  border-color: #2F8F5B !important;
+  box-shadow: 0 4px 8px rgba(47, 143, 91, 0.08) !important;
+  transform: translateY(-2px);
+}
+
+/* Icon chip inside stats card - SOFT COLORED CIRCLE */
+.stats-icon-chip,
+.icon-chip,
+[data-icon-chip] {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* Icon chip variants */
+.icon-chip-green,
+[data-icon-chip="green"] {
+  background-color: #E8F4EC !important;
+  color: #2F8F5B !important;
+}
+
+.icon-chip-amber,
+[data-icon-chip="amber"] {
+  background-color: #FFF4D9 !important;
+  color: #D9A441 !important;
+}
+
+.icon-chip-neutral,
+[data-icon-chip="neutral"] {
+  background-color: #F4F1EA !important;
+  color: #667268 !important;
+}
+
+.icon-chip-danger,
+[data-icon-chip="danger"] {
+  background-color: #FCECEC !important;
+  color: #D85C57 !important;
+}
+
+/* Stats card number - DARK, NOT GREEN */
+.stats-number,
+[data-stats-number] {
+  color: #1F2A24 !important;
+  font-weight: 700;
+  font-size: 1.875rem;
+}
+
+/* Stats card label - SECONDARY TEXT */
+.stats-label,
+[data-stats-label] {
+  color: #667268 !important;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Mini badge in stats card (top right corner) */
+.stats-mini-badge,
+[data-stats-badge] {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.stats-mini-badge.green {
+  background: #E8F4EC;
+  color: #26754A;
+}
+
+.stats-mini-badge.amber {
+  background: #FFF4D9;
+  color: #B88634;
+}
+
+/* Override any green solid card backgrounds */
+*[style*="background: linear-gradient"][style*="#2FA66A"],
+*[style*="background: linear-gradient"][style*="47, 166, 106"],
+.card[style*="background: linear-gradient"] {
+  background: #FFFFFF !important;
+  border: 1px solid #DDD6C8 !important;
+}
+
+/* ============================================================================
+   CARD AKTIVITAS / ACTIVITY LIST - CLEAN WHITE
+   ============================================================================ */
+
+/* Activity container */
+.activity-card,
+.activity-list,
+[data-activity-list] {
+  background-color: #FFFFFF !important;
+  border: 1px solid #DDD6C8 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Individual activity item - PUTIH ATAU SOFT NEUTRAL, BUKAN HIJAU */
+.activity-item,
+[data-activity-item] {
+  background-color: #FFFFFF !important;
+  border-bottom: 1px solid #DDD6C8 !important;
+  padding: 12px 16px;
+  transition: all 0.15s ease;
+}
+
+.activity-item:hover {
+  background-color: #F6F3EC !important;
+}
+
+/* Activity item icon - small colored chip */
+.activity-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activity-icon.green {
+  background: #E8F4EC;
+  color: #2F8F5B;
+}
+
+.activity-icon.amber {
+  background: #FFF4D9;
+  color: #D9A441;
+}
+
+/* Activity text */
+.activity-text {
+  color: #1F2A24 !important;
+  font-size: 0.875rem;
+}
+
+.activity-timestamp {
+  color: #8A948B !important;
+  font-size: 0.75rem;
+}
+
+/* Live badge - SOFT GREEN, NOT BRIGHT */
+.badge-live,
+[data-badge="live"] {
+  background: #E8F4EC !important;
+  color: #26754A !important;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ============================================================================
+   TABLE - CLEAN WHITE
+   ============================================================================ */
+
+table {
+  background-color: #FFFFFF !important;
+  border: 1px solid #DDD6C8 !important;
+}
+
+thead {
+  background-color: #F6F3EC !important;
+  border-bottom: 1px solid #DDD6C8 !important;
+}
+
+thead th {
+  color: #1F2A24 !important;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 12px 16px;
+}
+
+tbody tr {
+  border-bottom: 1px solid #DDD6C8 !important;
+  transition: background-color 0.15s ease;
+}
+
+tbody tr:hover {
+  background-color: #F6F3EC !important;
+}
+
+tbody td {
+  color: #1F2A24 !important;
+  padding: 12px 16px;
+}
+
+/* Nominal komisi/pendapatan in table - AMBER */
+.table-amount,
+.table-commission,
+[data-table-amount] {
+  color: #D9A441 !important;
+  font-weight: 600;
+}
+
+/* ============================================================================
+   STATUS BADGE - SOFT CAPSULE STYLE
+   ============================================================================ */
+
+.status-badge,
+.badge-status,
+[data-status] {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Active / Success / Verified */
+.status-active,
+.status-success,
+.status-verified,
+[data-status="active"],
+[data-status="success"],
+[data-status="verified"] {
+  background-color: #E8F4EC !important;
+  color: #26754A !important;
+  border: 1px solid rgba(47, 143, 91, 0.2) !important;
+}
+
+/* Pending / Processing / Waiting */
+.status-pending,
+.status-processing,
+.status-waiting,
+[data-status="pending"],
+[data-status="processing"],
+[data-status="waiting"] {
+  background-color: #FFF4D9 !important;
+  color: #B88634 !important;
+  border: 1px solid rgba(217, 164, 65, 0.2) !important;
+}
+
+/* Failed / Rejected / Cancelled */
+.status-failed,
+.status-rejected,
+.status-cancelled,
+[data-status="failed"],
+[data-status="rejected"],
+[data-status="cancelled"] {
+  background-color: #FCECEC !important;
+  color: #B84944 !important;
+  border: 1px solid rgba(216, 92, 87, 0.2) !important;
+}
+
+/* Draft / Inactive */
+.status-draft,
+.status-inactive,
+[data-status="draft"],
+[data-status="inactive"] {
+  background-color: #F4F1EA !important;
+  color: #8A948B !important;
+  border: 1px solid rgba(138, 148, 139, 0.2) !important;
+}
+
+/* ============================================================================
+   BUTTONS - CLEAN & CONSISTENT
+   ============================================================================ */
+
+/* Primary button - GREEN */
+button:not([class*="outline"]):not([class*="ghost"]):not([class*="secondary"]),
+.btn-primary,
+[data-button="primary"] {
+  background: linear-gradient(135deg, #2F8F5B, #26754A) !important;
+  color: white !important;
+  border: none !important;
+  transition: all 0.2s ease;
+}
+
+button:not([class*="outline"]):not([class*="ghost"]):not([class*="secondary"]):hover,
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(47, 143, 91, 0.2);
+}
+
+/* Secondary button - WHITE WITH BORDER */
+button[class*="outline"],
+button[class*="secondary"],
+.btn-secondary,
+[data-button="secondary"] {
+  background: #FFFFFF !important;
+  border: 1px solid #DDD6C8 !important;
+  color: #667268 !important;
+}
+
+button[class*="outline"]:hover,
+button[class*="secondary"]:hover,
+.btn-secondary:hover {
+  background: #F6F3EC !important;
+  border-color: #2F8F5B !important;
+  color: #2F8F5B !important;
+}
+
+/* Danger button */
+.btn-danger,
+[data-button="danger"] {
+  background: linear-gradient(135deg, #D85C57, #B84944) !important;
+  color: white !important;
+}
+
+.btn-danger:hover {
+  opacity: 0.9;
+}
+
+/* ============================================================================
+   FORM, MODAL, DROPDOWN - CLEAN WHITE
+   ============================================================================ */
+
+/* Modal */
+[role="dialog"],
+.modal,
+[data-modal] {
+  background-color: #FFFFFF !important;
+  border: 1px solid #DDD6C8 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Form container */
+form,
+.form-container {
+  background-color: transparent;
+}
+
+/* Input fields */
+input,
+textarea,
+select {
+  background-color: #FFFFFF !important;
+  border: 1px solid #DDD6C8 !important;
+  color: #1F2A24 !important;
+  transition: all 0.2s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8A948B !important;
+}
+
+/* Input focus state */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #2F8F5B !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(47, 143, 91, 0.1) !important;
+}
+
+/* Dropdown menu */
+[role="menu"],
+[role="listbox"],
+.dropdown-menu,
+[data-dropdown] {
+  background-color: #FFFFFF !important;
+  border: 1px solid #DDD6C8 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.dropdown-item:hover,
+[role="menuitem"]:hover {
+  background-color: #F6F3EC !important;
+  color: #2F8F5B !important;
+}
+
+/* ============================================================================
+   TOAST / NOTIFICATION - SOFT BACKGROUNDS
+   ============================================================================ */
+
+/* Toast base */
+.toast,
+[class*="toast"],
+[data-toast] {
+  background-color: #FFFFFF !important;
+  border: 1px solid #DDD6C8 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Success toast */
+.toast-success,
+[data-toast="success"] {
+  background-color: #E8F4EC !important;
+  border-color: #2F8F5B !important;
+  color: #26754A !important;
+}
+
+/* Warning toast */
+.toast-warning,
+[data-toast="warning"] {
+  background-color: #FFF4D9 !important;
+  border-color: #D9A441 !important;
+  color: #B88634 !important;
+}
+
+/* Error toast */
+.toast-error,
+[data-toast="error"] {
+  background-color: #FCECEC !important;
+  border-color: #D85C57 !important;
+  color: #B84944 !important;
+}
+
+/* Notification panel */
+.notification-panel,
+[data-notification-panel] {
+  background-color: #FFFFFF !important;
+  border: 1px solid #DDD6C8 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ============================================================================
+   NAVBAR ACTIVE STATE - SOFT CAPSULE
+   ============================================================================ */
+
+.navbar-item,
+[data-navbar-item] {
+  color: #667268;
+  transition: all 0.2s ease;
+  padding: 8px 16px;
+  border-radius: 12px;
+}
+
+.navbar-item:hover,
+[data-navbar-item]:hover {
+  color: #2F8F5B;
+  background-color: rgba(232, 244, 236, 0.5);
+}
+
+.navbar-item-active,
+.navbar-item[data-active="true"],
+[data-navbar-item][data-active="true"] {
+  background-color: #E8F4EC !important;
+  color: #2F8F5B !important;
+  font-weight: 600;
+  border: 1px solid rgba(47, 143, 91, 0.2);
+}
+
+/* ============================================================================
+   ROLE SWITCHER (Login/Register) - SOFT CAPSULE
+   ============================================================================ */
+
+.role-switch,
+.role-tab,
+[data-role-tab] {
+  background: transparent;
+  color: #667268;
+  border: 1px solid #DDD6C8;
+  padding: 8px 20px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.role-switch:hover,
+.role-tab:hover {
+  background: #F6F3EC;
+}
+
+.role-switch-active,
+.role-tab[data-active="true"],
+[data-role-tab][data-active="true"] {
+  background: #E8F4EC !important;
+  color: #2F8F5B !important;
+  border-color: #2F8F5B !important;
+  font-weight: 600;
+}
+
+/* ============================================================================
+   PROGRESS BAR - SOFT GREEN
+   ============================================================================ */
+
+.progress-bar {
+  background-color: #F6F3EC !important;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  background: linear-gradient(90deg, #2F8F5B, #26754A) !important;
+  transition: width 0.3s ease;
+}
+
+/* ============================================================================
+   CERTIFICATE STYLING - AMBER ACCENT
+   ============================================================================ */
+
+.certificate-card,
+[data-certificate] {
+  background: #FFFFFF !important;
+  border: 2px solid #D9A441 !important;
+  box-shadow: 0 4px 12px rgba(217, 164, 65, 0.15) !important;
+}
+
+.certificate-badge,
+.certificate-icon {
+  color: #D9A441 !important;
+}
+
+/* ============================================================================
+   COMMISSION STYLING - AMBER
+   ============================================================================ */
+
+.commission-amount,
+[data-commission] {
+  color: #D9A441 !important;
+  font-weight: 700;
+}
+
+.commission-badge {
+  background: #FFF4D9 !important;
+  color: #B88634 !important;
+  border: 1px solid rgba(217, 164, 65, 0.2);
+}
+
+/* ============================================================================
+   LANDING PAGE - CLEAN & LIGHT
+   ============================================================================ */
+
+.landing-section {
+  background: transparent;
+}
+
+.hero-section {
+  background: linear-gradient(180deg, #F7F5EF 0%, #F3F0E8 100%) !important;
+}
+
+/* Remove harsh gradients */
+[data-parallax][data-speed] {
+  opacity: 0.15 !important;
+  filter: blur(100px) !important;
+}
+
+/* ============================================================================
+   SCROLLBAR - SUBTLE
+   ============================================================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F3F0E8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #DDD6C8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2F8F5B;
+}
+
+/* ============================================================================
+   OVERRIDE HARDCODED GREEN SOLID CARDS
+   ============================================================================ */
+
+/* Kill all green solid backgrounds on cards */
+*[style*="background: linear-gradient"][style*="#2FA66A"],
+*[style*="background: linear-gradient"][style*="rgb(47, 166, 106)"],
+*[style*="background-color: #2FA66A"],
+*[style*="backgroundColor: '#2FA66A'"],
+.card[style*="background: linear-gradient"],
+.stats-card[style*="background: linear-gradient"] {
+  background: #FFFFFF !important;
+  border: 1px solid #DDD6C8 !important;
+}
+
+/* Override bright green text on cards */
+*[style*="color: #A8B5AA"] {
+  color: #667268 !important;
+}
+
+/* Override gray backgrounds */
+*[style*="background: #111B15"],
+*[style*="background: #0F1713"],
+*[style*="background-color: #111B15"],
+*[style*="background-color: #0F1713"] {
+  background: #F3F0E8 !important;
+}
+
+/* ============================================================================
+   MISC - CLEAN TOUCHES
+   ============================================================================ */
+
+/* Selection color */
+::selection {
+  background-color: rgba(47, 143, 91, 0.15);
+  color: #1F2A24;
+}
+
+/* Links */
+a {
+  color: #2F8F5B;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #26754A;
+}
+
+/* Empty states */
+.empty-state {
+  background: #F6F3EC;
+  border: 1px dashed #DDD6C8;
+  color: #8A948B;
+  padding: 32px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border-color: #DDD6C8;
+  border-top-color: #2F8F5B;
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+  color: #8A948B;
+}
+
+.breadcrumb a {
+  color: #667268;
+}
+
+.breadcrumb a:hover {
+  color: #2F8F5B;
+}
+
+/* Tabs */
+.tab-button {
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  color: #667268;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+  color: #2F8F5B;
+}
+
+.tab-button.active,
+.tab-button[data-active="true"] {
+  border-bottom-color: #2F8F5B;
+  color: #2F8F5B;
+  font-weight: 600;
+}
+
+/* Filter buttons */
+.filter-btn {
+  background: #FFFFFF;
+  border: 1px solid #DDD6C8;
+  color: #667268;
+  padding: 6px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: #E8F4EC;
+  border-color: #2F8F5B;
+  color: #2F8F5B;
+}
+
+/* Search bar */
+.search-bar {
+  background: #FFFFFF;
+  border: 1px solid #DDD6C8;
+}
+
+.search-bar:focus-within {
+  border-color: #2F8F5B;
+  box-shadow: 0 0 0 3px rgba(47, 143, 91, 0.1);
+}
+
+/* Pagination */
+.pagination button {
+  background: #FFFFFF;
+  border: 1px solid #DDD6C8;
+  color: #667268;
+  transition: all 0.2s ease;
+}
+
+.pagination button:hover {
+  background: #F6F3EC;
+  border-color: #2F8F5B;
+  color: #2F8F5B;
+}
+
+.pagination button.active {
+  background: linear-gradient(135deg, #2F8F5B, #26754A);
+  border-color: #2F8F5B;
+  color: white;
+}

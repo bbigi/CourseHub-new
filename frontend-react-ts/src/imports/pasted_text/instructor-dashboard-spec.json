@@ -1,0 +1,157 @@
+Buat sesuai perintah di bawah ini, jangan merubah desain yang lain yang tidak disuruh.
+
+Perbaiki halaman Enrolmen, Komisi, Penarikan Dana, dan Profil pada role Instruktur CourseHub. Jangan redesign dari awal dan jangan mengubah style global.
+
+Aturan utama:
+- Data harus sesuai akun instruktur yang login.
+- instruktur1.com hanya melihat enrolmen, komisi, dan profil dari kursus milik Instruktur 1.
+- instruktur2.com hanya melihat enrolmen, komisi, dan profil dari kursus milik Instruktur 2.
+- Satu instruktur bisa memiliki beberapa kursus.
+- Instruktur hanya bisa melihat data kursus miliknya sendiri.
+
+Halaman Enrolmen:
+Tampilkan siswa yang mengikuti kursus milik instruktur.
+Kolom tabel:
+- Nama Siswa
+- Kursus
+- Tanggal Enrol
+- Progress
+- Status Paket
+- Status Sertifikat
+- Aksi Detail
+
+Jika login instruktur1.com, contoh enrolmen:
+1. Siti Rahma - Bahasa Indonesia - Menulis & Membaca - 12 Jan 2025 - 80% - Paket Aktif - Belum Tersedia
+2. Ahmad Fauzi - Bahasa Indonesia - Menulis & Membaca - 10 Jan 2025 - 100% - Paket Aktif - Tersedia
+3. Gita Nurfadillah - IPS - Sejarah, Geografi & Ekonomi - 8 Jan 2025 - 45% - Paket Aktif - Belum Tersedia
+4. Budi Raharjo - Persiapan Ujian Bahasa Indonesia - 7 Jan 2025 - 20% - Paket Aktif - Belum Tersedia
+
+Jika login instruktur2.com, contoh enrolmen:
+1. Ahmad Fauzi - Matematika Kelas 10 - 10 Jan 2025 - 72% - Paket Aktif - Belum Tersedia
+2. Budi Raharjo - Matematika Kelas 10 - 8 Jan 2025 - 50% - Paket Aktif - Belum Tersedia
+3. Eka Putri - IPA Terpadu Kelas 8 - 2 Jan 2025 - 100% - Paket Aktif - Tersedia
+4. Citra Dewi - Persiapan UTBK - Saintek - 5 Jan 2025 - 30% - Paket Aktif - Belum Tersedia
+
+Klik baris enrolmen atau tombol Detail:
+- Buka modal Detail Siswa.
+- Isi modal:
+  Nama Siswa
+  Nama Kursus
+  Tanggal Enrol
+  Progress
+  Materi Selesai
+  Materi Tersisa
+  Status Paket
+  Status Sertifikat
+  Aktivitas Terakhir
+
+Halaman Komisi:
+Tampilkan ringkasan sederhana, tidak perlu perhitungan rumit.
+Card:
+- Total Komisi
+- Komisi Bulan Ini
+- Siap Ditarik
+
+Jika login instruktur1.com:
+Total Komisi: Rp2.750.000
+Komisi Bulan Ini: Rp1.100.000
+Siap Ditarik: Rp1.100.000
+
+Jika login instruktur2.com:
+Total Komisi: Rp3.594.000
+Komisi Bulan Ini: Rp1.437.000
+Siap Ditarik: Rp1.437.000
+
+Tambahkan catatan:
+“Komisi dihitung dari aktivitas kursus aktif. Detail perhitungan dikelola oleh sistem.”
+
+Riwayat Komisi:
+Kolom:
+- Periode
+- Kursus
+- Jumlah Siswa Aktif
+- Komisi
+- Status
+
+Status gunakan kapsul:
+- Dibayar
+- Menunggu
+- Diproses
+
+Tombol Ajukan Penarikan:
+- Membuka modal Ajukan Penarikan Komisi.
+- Isi modal:
+  Jumlah yang akan ditarik
+  Nama Bank
+  Nomor Rekening
+  Atas Nama
+  Tombol Batal
+  Tombol Ajukan
+- Nama Bank dibuat dropdown:
+  BCA
+  BRI
+  Mandiri
+  BNI
+- Setelah klik Ajukan, tampilkan toast kapsul sukses dan status penarikan menjadi Menunggu.
+
+Riwayat Penarikan:
+Tambahkan tabel sederhana:
+- Tanggal
+- Nominal
+- Bank
+- Nomor Rekening
+- Status
+
+Halaman Profil:
+Profil harus sesuai akun yang login.
+
+Profil untuk instruktur1.com:
+Nama: Pak Hendra Wijaya
+Username: instruktur1.com
+Email: instruktur1@coursehub.id
+Nomor HP: 0812-1111-2025
+Profesi: Guru/Pengajar
+Bidang Keahlian: Bahasa Indonesia, IPS, Persiapan Ujian
+Pendidikan Terakhir: S1 Pendidikan Bahasa Indonesia
+Instansi: SMA Negeri 1 Jakarta
+Pengalaman Mengajar: 7 tahun
+Deskripsi Keahlian: Pengajar yang berfokus pada Bahasa Indonesia, literasi, pemahaman teks, IPS dasar, dan persiapan ujian sekolah.
+Status Verifikasi: Terverifikasi
+Total Kursus: 3
+Total Siswa: 126
+Rating Rata-rata: 4.8
+Total Materi: 44
+
+Profil untuk instruktur2.com:
+Nama: Bu Ratna Dewi
+Username: instruktur2.com
+Email: instruktur2@coursehub.id
+Nomor HP: 0812-2222-2025
+Profesi: Guru/Pengajar
+Bidang Keahlian: Matematika, IPA, Persiapan Ujian
+Pendidikan Terakhir: S1 Pendidikan Matematika
+Instansi: SMA Negeri 2 Jakarta
+Pengalaman Mengajar: 8 tahun
+Deskripsi Keahlian: Pengajar yang membantu siswa memahami Matematika, IPA, dan persiapan ujian melalui materi yang runtut dan latihan terarah.
+Status Verifikasi: Terverifikasi
+Total Kursus: 3
+Total Siswa: 148
+Rating Rata-rata: 4.8
+Total Materi: 52
+
+Aktifkan icon lonceng notifikasi:
+- Klik lonceng menampilkan panel notifikasi.
+- Ada pesan belum dibaca.
+- Klik pesan membuka detail singkat dan mengubah status menjadi terbaca.
+- Ada tombol Tandai semua dibaca.
+- Isi notifikasi sesuai akun:
+  siswa baru mengikuti kursus,
+  materi berhasil ditambahkan,
+  komisi diperbarui,
+  penarikan dana sedang diproses,
+  kursus menunggu review admin.
+
+Gunakan satu style card, table, modal, status kapsul, tombol aksi, loader, toast, dan dropdown yang konsisten.
+
+Pastikan alur role instruktur terhubung:
+Instruktur login → melihat dashboard sesuai akun → membuat beberapa kursus → kursus masuk Pending Review → admin menyetujui → instruktur menambah materi per kursus → siswa mengikuti kursus → instruktur melihat enrolmen/progress → komisi tercatat → instruktur mengajukan penarikan dana.

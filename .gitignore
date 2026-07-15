@@ -1,0 +1,25 @@
+# Dependencies
+**/node_modules/
+**/vendor/
+
+# Local environment files (keep documented examples)
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+
+# Build and runtime output
+**/dist/
+**/build/
+**/writable/cache/*
+**/writable/logs/*
+**/writable/session/*
+**/writable/uploads/*
+!**/writable/**/.gitkeep
+
+# Editor and OS metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
