@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router";
+import { Navigate, Route, Routes, useNavigate } from "react-router";
 import { useAuth } from "./context/AuthContext";
-import { AuthApiError, type AuthUser, type UserRole } from "./features/auth/types";
+import { AuthApiError, type UserRole } from "./features/auth/types";
 import { VerificationStatusPage } from "./features/auth/VerificationStatusPage";
 import { AuthRegisterPage } from "./features/auth/AuthRegisterPage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
+import { CanonicalDashboardRedirect, RoleRoute } from "./routes/RoleRoute";
 import {
   BookOpen, Code2, BarChart3, ShieldCheck, Smartphone, Layers,
   UserPlus, LogIn, GraduationCap, TrendingUp, ArrowDown, ChevronRight,
@@ -21,19 +22,6 @@ type Page = "landing" | "login" | "register" | "dashboard" | "verification-statu
 type Role = UserRole;
 type InstrId = 1 | 2;
 type Nav = { page: Page; role?: Role; instrId?: InstrId };
-
-function dashboardPath(user: AuthUser): string {
-  switch (user.role) {
-    case "student":
-      return "/student/dashboard";
-    case "admin":
-      return "/admin/dashboard";
-    case "instructor":
-      return user.instructor_verification_status === "verified"
-        ? "/instructor/dashboard"
-        : "/instructor/status";
-  }
-}
 
 function errorMessage(error: unknown): string {
   if (!(error instanceof AuthApiError)) throw error;
@@ -5302,26 +5290,6 @@ function pathForNav(nav: Nav): string {
   }
 }
 
-function AuthenticatedDashboard() {
-  const location = useLocation();
-  const { user } = useAuth();
-  if (!user) return null;
-
-  const target = dashboardPath(user);
-  if (location.pathname !== target) return <Navigate to={target} replace />;
-  if (target === "/instructor/status") return <VerificationStatusPage />;
-  return <DashboardPage role={user.role} />;
-}
-
-function VerificationRoute() {
-  const { user } = useAuth();
-  if (!user) return null;
-  if (user.role !== "instructor" || user.instructor_verification_status === "verified") {
-    return <Navigate to={dashboardPath(user)} replace />;
-  }
-  return <VerificationStatusPage />;
-}
-
 function App() {
   const routerNavigate = useNavigate();
 
@@ -5336,11 +5304,19 @@ function App() {
       <Route path="/login" element={<LoginPage navigate={navigate} />} />
       <Route path="/register" element={<AuthRegisterPage />} />
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<AuthenticatedDashboard />} />
-        <Route path="/student/dashboard" element={<AuthenticatedDashboard />} />
-        <Route path="/instructor/dashboard" element={<AuthenticatedDashboard />} />
-        <Route path="/instructor/status" element={<VerificationRoute />} />
-        <Route path="/admin/dashboard" element={<AuthenticatedDashboard />} />
+        <Route path="/dashboard" element={<CanonicalDashboardRedirect />} />
+        <Route element={<RoleRoute role="student" />}>
+          <Route path="/student/dashboard" element={<DashboardPage role="student" />} />
+        </Route>
+        <Route element={<RoleRoute role="instructor" verification="verified" />}>
+          <Route path="/instructor/dashboard" element={<DashboardPage role="instructor" />} />
+        </Route>
+        <Route element={<RoleRoute role="instructor" verification="unverified" />}>
+          <Route path="/instructor/status" element={<VerificationStatusPage />} />
+        </Route>
+        <Route element={<RoleRoute role="admin" />}>
+          <Route path="/admin/dashboard" element={<DashboardPage role="admin" />} />
+        </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

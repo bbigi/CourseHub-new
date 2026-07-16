@@ -33,7 +33,7 @@ class CorsFilter implements FilterInterface
         }
 
         $response->setHeader('Vary', 'Origin');
-        $response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-API-KEY');
+        $response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, X-Requested-With');
         $response->setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
         $response->setHeader('Access-Control-Allow-Credentials', 'true');
     }

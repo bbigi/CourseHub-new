@@ -13,8 +13,8 @@ use CodeIgniter\Filters\PageCache;
 use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
 use App\Filters\CorsFilter;
-use App\Filters\ApiKeyFilter;
 use App\Filters\AuthFilter;
+use App\Filters\RoleFilter;
 
 class Filters extends BaseFilters
 {
@@ -35,8 +35,8 @@ class Filters extends BaseFilters
         'secureheaders' => SecureHeaders::class,
         'cors'          => Cors::class,
         'corsapi'       => CorsFilter::class,
-        'apikey'        => ApiKeyFilter::class,
         'auth'          => AuthFilter::class,
+        'role'          => RoleFilter::class,
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,

@@ -23,13 +23,17 @@ class AuthFilter implements FilterInterface
         }
 
         try {
-            $userId = (new JwtService())->subject($matches[1]);
+            $jwtService = new JwtService();
         } catch (LogicException) {
             return service('response')->setStatusCode(500)->setJSON([
                 'success' => false,
                 'message' => 'Konfigurasi autentikasi tidak tersedia.',
                 'errors' => [],
             ]);
+        }
+
+        try {
+            $userId = $jwtService->subject($matches[1]);
         } catch (Throwable) {
             return $this->unauthorized();
         }
