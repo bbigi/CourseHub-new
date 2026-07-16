@@ -15,6 +15,16 @@ $routes->group('api', ['filter' => 'corsapi'], static function ($routes) {
 
     $routes->get('health', 'Api\HealthController::index');
 
+    $routes->group('auth', static function ($routes) {
+        $routes->post('register-student', 'Api\AuthController::registerStudent');
+        $routes->post('register-instructor', 'Api\AuthController::registerInstructor');
+        $routes->post('login', 'Api\AuthController::login');
+        $routes->post('logout', 'Api\AuthController::logout', ['filter' => 'auth']);
+    });
+
+    $routes->get('me', 'Api\AuthController::me', ['filter' => 'auth']);
+    $routes->put('me', 'Api\AuthController::updateMe', ['filter' => 'auth']);
+
     // Courses REST API
     $routes->get('courses', 'Api\CourseController::index');
     $routes->get('courses/(:num)', 'Api\CourseController::show/$1');

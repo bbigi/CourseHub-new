@@ -1,4 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router";
+import { useAuth } from "./context/AuthContext";
+import { AuthApiError, type AuthUser, type UserRole } from "./features/auth/types";
+import { VerificationStatusPage } from "./features/auth/VerificationStatusPage";
+import { AuthRegisterPage } from "./features/auth/AuthRegisterPage";
+import { ProtectedRoute } from "./routes/ProtectedRoute";
 import {
   BookOpen, Code2, BarChart3, ShieldCheck, Smartphone, Layers,
   UserPlus, LogIn, GraduationCap, TrendingUp, ArrowDown, ChevronRight,
@@ -11,10 +17,29 @@ import {
 } from "lucide-react";
 
 // ─── Types & Shared Components ────────────────────────────────────────────────
-type Page = "landing" | "login" | "register" | "dashboard";
-type Role = "student" | "admin" | "instructor";
+type Page = "landing" | "login" | "register" | "dashboard" | "verification-status";
+type Role = UserRole;
 type InstrId = 1 | 2;
 type Nav = { page: Page; role?: Role; instrId?: InstrId };
+
+function dashboardPath(user: AuthUser): string {
+  switch (user.role) {
+    case "student":
+      return "/student/dashboard";
+    case "admin":
+      return "/admin/dashboard";
+    case "instructor":
+      return user.instructor_verification_status === "verified"
+        ? "/instructor/dashboard"
+        : "/instructor/status";
+  }
+}
+
+function errorMessage(error: unknown): string {
+  if (!(error instanceof AuthApiError)) throw error;
+  const validationMessages = Object.values(error.errors);
+  return validationMessages.length > 0 ? validationMessages.join(" ") : error.message;
+}
 
 // ─── Color Palette ────────────────────────────────────────────────────────────
 const COLORS = {
@@ -406,43 +431,34 @@ function AuthLayout({ children, navigate }: { children: React.ReactNode; navigat
 // LOGIN PAGE
 // ═══════════════════════════════════════════════════════════════════════════════
 function LoginPage({ navigate }: { navigate: (n: Nav) => void }) {
+  const { login } = useAuth();
   const [showPass, setShowPass] = useState(false);
-  const [role, setRole] = useState<Role>("student");
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  // Only public roles shown — admin masuk lewat akun khusus
-  const roleOpts: { value: Role; label: string; icon: React.ElementType; color: string }[] = [
-    { value: "student", label: "Siswa", icon: User, color: COLORS.primary.main },
-    { value: "instructor", label: "Instruktur", icon: Briefcase, color: COLORS.accent },
-  ];
-
-  function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    // Akun admin khusus — tidak ditampilkan sebagai pilihan role
-    if (username === "kelompok13.com" && pass === "admin123") {
-      navigate({ page: "dashboard", role: "admin" });
+    if (!email.trim() || !pass) {
+      setError("Email dan password tidak boleh kosong.");
       return;
     }
-    if (!username || !pass) {
-      setError("Username dan password tidak boleh kosong.");
-      return;
+
+    setSubmitting(true);
+    try {
+      const user = await login({ email: email.trim(), password: pass });
+      if (user.role === "instructor" && user.instructor_verification_status !== "verified") {
+        navigate({ page: "verification-status" });
+        return;
+      }
+      navigate({ page: "dashboard", role: user.role });
+    } catch (caughtError) {
+      setError(errorMessage(caughtError));
+    } finally {
+      setSubmitting(false);
     }
-    if (username === "instruktur1.com" && pass === "kursus123") {
-      navigate({ page: "dashboard", role: "instructor", instrId: 1 });
-      return;
-    }
-    if (username === "instruktur2.com" && pass === "kursus123") {
-      navigate({ page: "dashboard", role: "instructor", instrId: 2 });
-      return;
-    }
-    if (role === "instructor") {
-      navigate({ page: "dashboard", role: "instructor", instrId: 1 });
-      return;
-    }
-    navigate({ page: "dashboard", role });
   }
 
   return (
@@ -458,42 +474,20 @@ function LoginPage({ navigate }: { navigate: (n: Nav) => void }) {
       </div>
 
       <GlassCard className="p-8" style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.07)" }}>
-        {/* Role selector — hanya Siswa & Instruktur */}
-        <div className="mb-6">
-          <label className="text-xs font-semibold mb-3 block" style={{ color: COLORS.text.main, fontFamily: "'JetBrains Mono',monospace" }}>MASUK SEBAGAI</label>
-          <div className="grid grid-cols-2 gap-2">
-            {roleOpts.map(({ value, label, icon: Icon, color }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setRole(value)}
-                className="flex flex-col items-center gap-2 py-3 rounded-xl border transition-all duration-200"
-                style={{
-                  borderColor: role === value ? "#2F8F5B" : COLORS.border,
-                  background: role === value ? "#2F8F5B" : "#FAFAF8",
-                  color: role === value ? "#FFFFFF" : COLORS.text.secondary,
-                  boxShadow: role === value ? "0 2px 8px rgba(47,143,91,0.25)" : "none",
-                }}
-              >
-                <Icon size={18} />
-                <span className="text-xs font-semibold" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <div>
-            <label className="text-xs font-semibold mb-2 block" style={{ color: COLORS.text.main, fontFamily: "'JetBrains Mono',monospace" }}>USERNAME</label>
+            <label className="text-xs font-semibold mb-2 block" style={{ color: COLORS.text.main, fontFamily: "'JetBrains Mono',monospace" }}>EMAIL</label>
             <div className="relative">
-              <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: COLORS.text.secondary }} />
+              <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: COLORS.text.secondary }} />
               <input
-                type="text"
-                placeholder="Username kamu"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                autoComplete="email"
+                placeholder="email@domain.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border text-sm outline-none transition-all focus:border-[#2FA66A]"
                 style={{ background: COLORS.bg.card, borderColor: COLORS.border, color: COLORS.text.main }}
+                required
               />
             </div>
           </div>
@@ -504,10 +498,12 @@ function LoginPage({ navigate }: { navigate: (n: Nav) => void }) {
               <input
                 type={showPass ? "text" : "password"}
                 placeholder="••••••••"
+                autoComplete="current-password"
                 value={pass}
                 onChange={(e) => setPass(e.target.value)}
                 className="w-full pl-10 pr-11 py-3 rounded-xl border text-sm outline-none transition-all focus:border-[#2FA66A]"
                 style={{ background: COLORS.bg.card, borderColor: COLORS.border, color: COLORS.text.main }}
+                required
               />
               <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3.5 top-1/2 -translate-y-1/2" style={{ color: COLORS.text.secondary }}>
                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -523,10 +519,11 @@ function LoginPage({ navigate }: { navigate: (n: Nav) => void }) {
 
           <button
             type="submit"
+            disabled={submitting}
             className="w-full py-3 rounded-xl text-white font-semibold text-sm mt-1 transition-all hover:opacity-90 hover:-translate-y-0.5"
-            style={{ background: `linear-gradient(135deg,${COLORS.primary.main},${COLORS.primary.hover})`, fontFamily: "'Plus Jakarta Sans',sans-serif" }}
+            style={{ background: `linear-gradient(135deg,${COLORS.primary.main},${COLORS.primary.hover})`, fontFamily: "'Plus Jakarta Sans',sans-serif", opacity: submitting ? 0.7 : 1 }}
           >
-            Masuk
+            {submitting ? "Memproses..." : "Masuk"}
           </button>
         </form>
 
@@ -930,11 +927,12 @@ function NotificationPanel({ notifs, setNotifs, onClose }: {
 }
 
 function DashboardShell({
-  role, activeNav, setActiveNav, navigate, children, instrId,
+  role, activeNav, setActiveNav, children, instrId,
 }: {
   role: Role; activeNav: string; setActiveNav: (v: string) => void;
-  navigate: (n: Nav) => void; children: React.ReactNode; instrId?: InstrId;
+  children: React.ReactNode; instrId?: InstrId;
 }) {
+  const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifs, setNotifs] = useState<Notif[]>(
@@ -1009,7 +1007,7 @@ function DashboardShell({
         ))}
       </nav>
       <div className="p-4 border-t" style={{ borderColor: COLORS.border }}>
-        <button onClick={() => navigate({ page: "landing" })} className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium w-full transition-all" style={{ color: COLORS.text.secondary, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
+        <button onClick={() => { void logout(); }} className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium w-full transition-all" style={{ color: COLORS.text.secondary, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
           <LogOut size={17} /> Keluar
         </button>
       </div>
@@ -1060,7 +1058,7 @@ function DashboardShell({
                 {roleLabel[role][0]}
               </div>
               <div className="hidden sm:block">
-                <div className="text-xs font-semibold" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", color: COLORS.text.main }}>Demo User</div>
+                <div className="text-xs font-semibold" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", color: COLORS.text.main }}>{user?.name ?? roleLabel[role]}</div>
                 <div className="text-[10px]" style={{ color: COLORS.text.secondary }}>{roleLabel[role]}</div>
               </div>
             </div>
@@ -5190,7 +5188,7 @@ function AdminTransactions() {
 // ═══════════════════════════════════════════════════════════════════════════════
 // DASHBOARD PAGE (router by role + activeNav)
 // ═══════════════════════════════════════════════════════════════════════════════
-function DashboardPage({ role, navigate, instrId: instrIdProp }: { role: Role; navigate: (n: Nav) => void; instrId?: InstrId }) {
+function DashboardPage({ role, instrId: instrIdProp }: { role: Role; instrId?: InstrId }) {
   const defaultNav: Record<Role, string> = { student: "overview", instructor: "overview", admin: "overview" };
   const [activeNav, setActiveNav] = useState(defaultNav[role]);
 
@@ -5271,7 +5269,7 @@ function DashboardPage({ role, navigate, instrId: instrIdProp }: { role: Role; n
   }
 
   return (
-    <DashboardShell role={role} activeNav={activeNav} setActiveNav={setActiveNav} navigate={navigate} instrId={instrId}>
+    <DashboardShell role={role} activeNav={activeNav} setActiveNav={setActiveNav} instrId={instrId}>
       {renderContent()}
     </DashboardShell>
   );
@@ -5280,18 +5278,73 @@ function DashboardPage({ role, navigate, instrId: instrIdProp }: { role: Role; n
 // ═══════════════════════════════════════════════════════════════════════════════
 // ROOT APP
 // ═══════════════════════════════════════════════════════════════════════════════
+function pathForNav(nav: Nav): string {
+  switch (nav.page) {
+    case "landing":
+      return "/";
+    case "login":
+      return "/login";
+    case "register":
+      return "/register";
+    case "verification-status":
+      return "/instructor/status";
+    case "dashboard":
+      switch (nav.role) {
+        case "student":
+          return "/student/dashboard";
+        case "instructor":
+          return "/instructor/dashboard";
+        case "admin":
+          return "/admin/dashboard";
+        default:
+          return "/dashboard";
+      }
+  }
+}
+
+function AuthenticatedDashboard() {
+  const location = useLocation();
+  const { user } = useAuth();
+  if (!user) return null;
+
+  const target = dashboardPath(user);
+  if (location.pathname !== target) return <Navigate to={target} replace />;
+  if (target === "/instructor/status") return <VerificationStatusPage />;
+  return <DashboardPage role={user.role} />;
+}
+
+function VerificationRoute() {
+  const { user } = useAuth();
+  if (!user) return null;
+  if (user.role !== "instructor" || user.instructor_verification_status === "verified") {
+    return <Navigate to={dashboardPath(user)} replace />;
+  }
+  return <VerificationStatusPage />;
+}
+
 function App() {
-  const [nav, setNav] = useState<Nav>({ page: "landing" });
+  const routerNavigate = useNavigate();
 
   const navigate = useCallback((n: Nav) => {
-    setNav(n);
+    routerNavigate(pathForNav(n));
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  }, [routerNavigate]);
 
-  if (nav.page === "login") return <LoginPage navigate={navigate} />;
-  if (nav.page === "register") return <RegisterPage navigate={navigate} />;
-  if (nav.page === "dashboard" && nav.role) return <DashboardPage role={nav.role} navigate={navigate} instrId={nav.instrId} />;
-  return <PublicLandingPage navigate={navigate} />;
+  return (
+    <Routes>
+      <Route path="/" element={<PublicLandingPage navigate={navigate} />} />
+      <Route path="/login" element={<LoginPage navigate={navigate} />} />
+      <Route path="/register" element={<AuthRegisterPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<AuthenticatedDashboard />} />
+        <Route path="/student/dashboard" element={<AuthenticatedDashboard />} />
+        <Route path="/instructor/dashboard" element={<AuthenticatedDashboard />} />
+        <Route path="/instructor/status" element={<VerificationRoute />} />
+        <Route path="/admin/dashboard" element={<AuthenticatedDashboard />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
 
 export default App;
