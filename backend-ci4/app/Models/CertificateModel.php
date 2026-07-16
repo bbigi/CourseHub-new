@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class EnrollmentModel extends Model
+class CertificateModel extends Model
 {
-    protected $table = 'enrollments';
+    protected $table = 'certificates';
     protected $primaryKey = 'id';
     protected $returnType = 'array';
     protected $useTimestamps = true;
@@ -16,14 +16,15 @@ class EnrollmentModel extends Model
     protected $allowedFields = [
         'user_id',
         'course_id',
-        'status',
-        'enrolled_at',
-        'completed_at',
+        'enrollment_id',
+        'certificate_code',
+        'issued_at',
     ];
 
     protected $validationRules = [
         'user_id' => 'required|is_natural_no_zero',
         'course_id' => 'required|is_natural_no_zero',
-        'status' => 'permit_empty|in_list[active,completed]',
+        'enrollment_id' => 'required|is_natural_no_zero|is_unique[certificates.enrollment_id,id,{id}]',
+        'certificate_code' => 'required|max_length[80]|is_unique[certificates.certificate_code,id,{id}]',
     ];
 }

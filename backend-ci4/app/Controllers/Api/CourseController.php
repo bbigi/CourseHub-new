@@ -2,9 +2,11 @@
 
 namespace App\Controllers\Api;
 
+use App\Libraries\AuthContext;
 use App\Models\CourseModel;
+use App\Policies\CourseOwnershipPolicy;
 use CodeIgniter\RESTful\ResourceController;
-use CodeIgniter\HTTP\ResponseInterface;
+use Config\Domain;
 
 class CourseController extends ResourceController
 {
@@ -18,20 +20,17 @@ class CourseController extends ResourceController
 
     public function index()
     {
-        $status = $this->request->getGet('status');
-        $category = $this->request->getGet('category');
+        $categoryId = $this->request->getGet('category_id');
 
         $builder = $this->courseModel
-            ->select('courses.*, users.name AS instructor_name')
+            ->select('courses.*, users.name AS instructor_name, categories.name AS category_name')
             ->join('users', 'users.id = courses.instructor_id', 'left')
+            ->join('categories', 'categories.id = courses.category_id', 'left')
+            ->where('courses.status', Domain::COURSE_PUBLISHED)
             ->orderBy('courses.id', 'DESC');
 
-        if ($status) {
-            $builder->where('courses.status', $status);
-        }
-
-        if ($category) {
-            $builder->where('courses.category', $category);
+        if ($categoryId !== null && $categoryId !== '') {
+            $builder->where('courses.category_id', $categoryId);
         }
 
         return $this->respond([
@@ -44,8 +43,10 @@ class CourseController extends ResourceController
     public function show($id = null)
     {
         $course = $this->courseModel
-            ->select('courses.*, users.name AS instructor_name')
+            ->select('courses.*, users.name AS instructor_name, categories.name AS category_name')
             ->join('users', 'users.id = courses.instructor_id', 'left')
+            ->join('categories', 'categories.id = courses.category_id', 'left')
+            ->where('courses.status', Domain::COURSE_PUBLISHED)
             ->find($id);
 
         if (!$course) {
@@ -59,19 +60,34 @@ class CourseController extends ResourceController
         ]);
     }
 
+    public function owned()
+    {
+        $user = AuthContext::user();
+        $courses = $this->courseModel
+            ->where('instructor_id', (int) ($user['id'] ?? 0))
+            ->orderBy('id', 'DESC')
+            ->findAll();
+
+        return $this->respond([
+            'status' => true,
+            'message' => 'Owned course list retrieved successfully.',
+            'data' => $courses,
+        ]);
+    }
+
     public function create()
     {
         $payload = $this->request->getJSON(true) ?? $this->request->getPost();
+        $user = AuthContext::user();
 
         $data = [
             'title' => trim($payload['title'] ?? ''),
             'slug' => trim($payload['slug'] ?? url_title($payload['title'] ?? '', '-', true)),
-            'category' => trim($payload['category'] ?? ''),
+            'category_id' => $payload['category_id'] ?? null,
             'description' => trim($payload['description'] ?? ''),
-            'level' => $payload['level'] ?? 'pemula',
-            'price' => $payload['price'] ?? 0,
-            'status' => $payload['status'] ?? 'draft',
-            'instructor_id' => $payload['instructor_id'] ?? $payload['instructorId'] ?? null,
+            'level' => $payload['level'] ?? 'beginner',
+            'status' => Domain::COURSE_DRAFT,
+            'instructor_id' => (int) ($user['id'] ?? 0),
             'thumbnail' => $payload['thumbnail'] ?? null,
         ];
 
@@ -88,8 +104,14 @@ class CourseController extends ResourceController
 
     public function update($id = null)
     {
-        if (!$this->courseModel->find($id)) {
+        $course = $this->courseModel->find($id);
+
+        if (!$course) {
             return $this->failNotFound('Course not found.');
+        }
+
+        if (!(new CourseOwnershipPolicy())->allows($course)) {
+            return $this->failForbidden('You do not own this course.');
         }
 
         $payload = $this->request->getJSON(true) ?? $this->request->getRawInput();
@@ -97,12 +119,9 @@ class CourseController extends ResourceController
         $data = array_filter([
             'title' => isset($payload['title']) ? trim($payload['title']) : null,
             'slug' => isset($payload['slug']) ? trim($payload['slug']) : null,
-            'category' => isset($payload['category']) ? trim($payload['category']) : null,
+            'category_id' => $payload['category_id'] ?? null,
             'description' => isset($payload['description']) ? trim($payload['description']) : null,
             'level' => $payload['level'] ?? null,
-            'price' => $payload['price'] ?? null,
-            'status' => $payload['status'] ?? null,
-            'instructor_id' => $payload['instructor_id'] ?? $payload['instructorId'] ?? null,
             'thumbnail' => $payload['thumbnail'] ?? null,
         ], static fn ($value) => $value !== null);
 
@@ -123,8 +142,14 @@ class CourseController extends ResourceController
 
     public function delete($id = null)
     {
-        if (!$this->courseModel->find($id)) {
+        $course = $this->courseModel->find($id);
+
+        if (!$course) {
             return $this->failNotFound('Course not found.');
+        }
+
+        if (!(new CourseOwnershipPolicy())->allows($course)) {
+            return $this->failForbidden('You do not own this course.');
         }
 
         $this->courseModel->delete($id);

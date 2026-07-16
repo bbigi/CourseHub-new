@@ -2,16 +2,21 @@
 
 namespace App\Controllers\Api;
 
+use App\Libraries\AuthContext;
+use App\Models\CourseModel;
 use App\Models\EnrollmentModel;
 use CodeIgniter\RESTful\ResourceController;
+use Config\Domain;
 
 class EnrollmentController extends ResourceController
 {
     protected $format = 'json';
+    private CourseModel $courseModel;
     private EnrollmentModel $enrollmentModel;
 
     public function __construct()
     {
+        $this->courseModel = new CourseModel();
         $this->enrollmentModel = new EnrollmentModel();
     }
 
@@ -53,12 +58,18 @@ class EnrollmentController extends ResourceController
     public function create()
     {
         $payload = $this->request->getJSON(true) ?? $this->request->getPost();
+        $user = AuthContext::user();
+        $courseId = (int) ($payload['course_id'] ?? $payload['courseId'] ?? 0);
+        $course = $this->courseModel->find($courseId);
+
+        if (! is_array($course) || ($course['status'] ?? null) !== Domain::COURSE_PUBLISHED) {
+            return $this->failNotFound('Course not found.');
+        }
 
         $data = [
-            'user_id' => $payload['user_id'] ?? $payload['userId'] ?? null,
-            'course_id' => $payload['course_id'] ?? $payload['courseId'] ?? null,
-            'status' => $payload['status'] ?? 'aktif',
-            'progress' => $payload['progress'] ?? 0,
+            'user_id' => (int) ($user['id'] ?? 0),
+            'course_id' => $courseId,
+            'status' => 'active',
             'enrolled_at' => date('Y-m-d H:i:s'),
             'completed_at' => null,
         ];
@@ -84,8 +95,7 @@ class EnrollmentController extends ResourceController
 
         $data = array_filter([
             'status' => $payload['status'] ?? null,
-            'progress' => $payload['progress'] ?? null,
-            'completed_at' => (($payload['progress'] ?? null) === 100 || ($payload['status'] ?? null) === 'selesai') ? date('Y-m-d H:i:s') : null,
+            'completed_at' => ($payload['status'] ?? null) === 'completed' ? date('Y-m-d H:i:s') : null,
         ], static fn ($value) => $value !== null);
 
         if ($data === []) {
